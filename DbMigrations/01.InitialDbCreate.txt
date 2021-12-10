@@ -1,0 +1,10 @@
+CREATE TABLE Persons (
+    ID int IDENTITY(1,1) PRIMARY KEY,
+    LastName varchar(255) NOT NULL,
+    FirstName varchar(255),
+    Age int
+);
+
+INSERT INTO Persons (LastName, FirstName, Age)
+VALUES ('Levkovych', 'Omelian', 25),
+('Schinka', 'Oleg', 29);
