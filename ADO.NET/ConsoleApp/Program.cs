@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ConsoleApp.ConnectionPool;
+using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
@@ -21,9 +22,13 @@ namespace ConsoleApp
 
             watch.Stop();
             Console.WriteLine($"Execution Time: {watch.ElapsedMilliseconds} ms");
+
+
+            var connectionPoolExamples = new ConnectionPoolExamples();
+            connectionPoolExamples.ShowAllExamples();
         }
 
-        public static void PrintConnectionState(IDbConnection dbConnection)
+        private static void PrintConnectionState(IDbConnection dbConnection)
         {
             while (dbConnection.State is not ConnectionState.Open)
             {
