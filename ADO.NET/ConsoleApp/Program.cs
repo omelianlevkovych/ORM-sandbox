@@ -23,6 +23,13 @@ namespace ConsoleApp
             watch.Stop();
             Console.WriteLine($"Execution Time: {watch.ElapsedMilliseconds} ms");
 
+            var sqlExpression =
+                @"INSERT INTO Persons (FirstName, LastName, Age)
+                  VALUES ('Omelian', 'Levkovych', 25)";
+
+            var command = new SqlCommand(sqlExpression, connection);
+            int updatedRows = command.ExecuteNonQuery();
+            Console.WriteLine($"Updated rows: {updatedRows}");
 
             var connectionPoolExamples = new ConnectionPoolExamples();
             connectionPoolExamples.ShowAllExamples();
