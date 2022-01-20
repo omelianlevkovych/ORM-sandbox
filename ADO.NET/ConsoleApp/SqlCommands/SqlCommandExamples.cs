@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Data.SqlClient;
 using System.Text;
 using System.Threading.Tasks;
@@ -72,6 +73,37 @@ namespace ConsoleApp.SqlCommands
             var firstName = "DELETE FROM Persons";
             SafeSqlQuery(firstName, "Levkovych", 25);
             RealSqlInjection(firstName, "Dummy", 0);
+
+            var sp_result = await GetAllDataByNameUsingStoredProcedure("Omelian", "Levkovych");
+            Console.WriteLine($"Stored procedure result : {sp_result}");
+        }
+
+        private async Task<string> GetAllDataByNameUsingStoredProcedure(string firstName, string lastName)
+        {
+            var sqlExpression = "SelectAllPersonsByName";
+            var command = new SqlCommand(sqlExpression, sqlConnection);
+            command.CommandType = CommandType.StoredProcedure;
+
+            command.Parameters.Add("@FirstName", SqlDbType.VarChar).Value = firstName;
+            command.Parameters.Add("@LastName", SqlDbType.VarChar).Value = lastName;
+            using var reader = command.ExecuteReader();
+
+            if (!reader.HasRows)
+            {
+                throw new ApplicationException("The table is empty");
+            }
+
+            var result = new StringBuilder();
+            while (await reader.ReadAsync())
+            {
+                int id = reader.GetInt32(0);
+                firstName = reader.GetString(1);
+                lastName = reader.GetString(2);
+                int age = reader.GetInt32(3);
+
+                result.Append($"\n {id} \t{firstName} \t{lastName} \t{age}");
+            }
+            return result.ToString();
         }
 
         private int SafeSqlQuery(string firstName, string lastName, int age)
