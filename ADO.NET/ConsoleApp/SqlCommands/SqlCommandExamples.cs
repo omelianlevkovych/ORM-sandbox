@@ -14,16 +14,29 @@ namespace ConsoleApp.SqlCommands
 
         public void ShowAllExamples()
         {
-            Console.WriteLine($"Updated rows: {UpdatePersons()}");
+            var insertSqlExpression =
+                @"INSERT INTO Persons (FirstName, LastName, Age)
+                  VALUES ('Omelian', 'Levkovych', 25)";
+            var insertedRows = ExecuteNonQeury(insertSqlExpression);
+            Console.WriteLine($"Inserted rows: {insertedRows}");
+
+            var updateSqlExpression =
+                @"UPDATE Persons
+                  SET Age=20 WHERE FirstName='Omelian'";
+            var updatedRows = ExecuteNonQeury(updateSqlExpression);
+            Console.WriteLine($"Updated rows: {updatedRows}");
+
+            var deleteSqlExpression =
+                @"DELETE FROM Persons
+                  WHERE FirstName='Omelian'";
+            var deletedRows = ExecuteNonQeury(deleteSqlExpression);
+            Console.WriteLine($"Deleted rows: {deletedRows}");
         }
 
-        private int UpdatePersons()
+        private int ExecuteNonQeury(string sqlExpression)
         {
             using var connection = new SqlConnection(connectionString);
             connection.Open();
-            var sqlExpression =
-                @"INSERT INTO Persons (FirstName, LastName, Age)
-                  VALUES ('Omelian', 'Levkovych', 25)";
 
             var command = new SqlCommand(sqlExpression, connection);
             int updatedRows = command.ExecuteNonQuery();
