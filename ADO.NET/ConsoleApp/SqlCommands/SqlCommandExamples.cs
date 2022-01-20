@@ -81,8 +81,10 @@ namespace ConsoleApp.SqlCommands
         private async Task<string> GetAllDataByNameUsingStoredProcedure(string firstName, string lastName)
         {
             var sqlExpression = "SelectAllPersonsByName";
-            var command = new SqlCommand(sqlExpression, sqlConnection);
-            command.CommandType = CommandType.StoredProcedure;
+            using var command = new SqlCommand(sqlExpression, sqlConnection)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
 
             command.Parameters.Add("@FirstName", SqlDbType.VarChar).Value = firstName;
             command.Parameters.Add("@LastName", SqlDbType.VarChar).Value = lastName;
@@ -125,14 +127,14 @@ namespace ConsoleApp.SqlCommands
 
         private int ExecuteNonQeury(string sqlExpression)
         {
-            var command = new SqlCommand(sqlExpression, sqlConnection);
+            using var command = new SqlCommand(sqlExpression, sqlConnection);
             int updatedRows = command.ExecuteNonQuery();
             return updatedRows;
         }
 
         private async Task<string> ExecuteReader(string sqlExpression)
         {
-            var command = new SqlCommand(sqlExpression, sqlConnection);
+            using var command = new SqlCommand(sqlExpression, sqlConnection);
             using var reader = command.ExecuteReader();
             if (!reader.HasRows)
             {
@@ -159,7 +161,7 @@ namespace ConsoleApp.SqlCommands
 
         private Task<object> ExecuteScalar(string sqlExpression)
         {
-            var command = new SqlCommand(sqlExpression, sqlConnection);
+            using var command = new SqlCommand(sqlExpression, sqlConnection);
             return command.ExecuteScalarAsync();
         }
     }

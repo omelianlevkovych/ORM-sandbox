@@ -1,5 +1,6 @@
 ﻿using ConsoleApp.ConnectionPool;
 using ConsoleApp.SqlCommands;
+using ConsoleApp.Transactions;
 using System;
 using System.Data;
 using System.Data.SqlClient;
@@ -30,6 +31,11 @@ namespace ConsoleApp
 
             using var sqlCommandExamples = new SqlCommandExamples();
             Task.Run(async () => await sqlCommandExamples.ShowAllExamples());
+
+            using var sqlTransactionExamples = new TransactionExamples();
+            sqlTransactionExamples.InsertWithTransaction();
+            sqlTransactionExamples.InsertWithFailingTransaction();
+
             Console.Read();
         }
 
