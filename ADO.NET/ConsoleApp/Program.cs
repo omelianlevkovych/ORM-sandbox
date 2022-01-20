@@ -4,6 +4,7 @@ using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace ConsoleApp
 {
@@ -28,7 +29,8 @@ namespace ConsoleApp
             connectionPoolExamples.ShowAllExamples();
 
             var sqlCommandExamples = new SqlCommandExamples();
-            sqlCommandExamples.ShowAllExamples();
+            Task.Run(async () => await sqlCommandExamples.ShowAllExamples());
+            Console.Read();
         }
 
         private static void PrintConnectionState(IDbConnection dbConnection)

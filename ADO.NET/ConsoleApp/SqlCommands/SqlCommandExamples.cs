@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data.SqlClient;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace ConsoleApp.SqlCommands
 {
@@ -13,7 +14,7 @@ namespace ConsoleApp.SqlCommands
             connectionString = @"Server=.;Database=usersdb;Integrated Security=true;";
         }
 
-        public void ShowAllExamples()
+        public async Task ShowAllExamples()
         {
             var insertSqlExpression =
                 @"INSERT INTO Persons (FirstName, LastName, Age)
@@ -37,7 +38,7 @@ namespace ConsoleApp.SqlCommands
             var selectAllSqlExpression =
                 @"SELECT * FROM Persons";
             ExecuteNonQeury(insertSqlExpression);
-            var selectAllResult = ExecuteReader(selectAllSqlExpression);
+            var selectAllResult = await ExecuteReader(selectAllSqlExpression);
             Console.WriteLine(selectAllResult);
         }
 
@@ -51,7 +52,7 @@ namespace ConsoleApp.SqlCommands
             return updatedRows;
         }
 
-        private string ExecuteReader(string sqlExpression)
+        private async Task<string> ExecuteReader(string sqlExpression)
         {
             using var connection = new SqlConnection(connectionString);
             connection.Open();
@@ -69,13 +70,13 @@ namespace ConsoleApp.SqlCommands
             {
                 result.Append($"{reader.GetName(i)} \t");
             }
-            while (reader.Read())
+            while (await reader.ReadAsync())
             {
-                // TODO: feels bad, can we do this without casting?
-                object id = reader.GetValue(0);
-                object firstName = reader.GetValue(1);
-                object lastName = reader.GetValue(2);
-                object age = reader.GetValue(3);
+                // TODO: feels bad, can we do this without casting (strongly typed)?
+                object id = reader["id"];
+                object firstName = reader["firstname"];
+                object lastName = reader["lastname"];
+                object age = reader["age"];
 
                 result.Append($"\n {id} \t{firstName} \t{lastName} \t{age}");
             }
