@@ -67,6 +67,28 @@ namespace ConsoleApp.SqlCommands
                 @"SELECT COUNT(*) FROM Persons";
             var scalarResult = await ExecuteScalar(scalarSqlExpression);
             Console.WriteLine($"Rows count: {scalarResult}");
+
+            // In both cases it wont delete anything. Sql injection should be more investigated in future.
+            var firstName = "DELETE FROM Persons";
+            SafeSqlQuery(firstName, "Levkovych", 25);
+            RealSqlInjection(firstName, "Dummy", 0);
+        }
+
+        private int SafeSqlQuery(string firstName, string lastName, int age)
+        {
+            // Execute parameterized
+            var tryInjectionSqlExpression = 
+                @$"INSERT INTO Persons (FirstName, LastName, Age)
+                  VALUES ('{firstName}','{lastName}', {age})";
+            return ExecuteNonQeury(tryInjectionSqlExpression);
+        }
+
+        private int RealSqlInjection(string firstName, string lastName, int age)
+        {
+            var tryInjectionSqlExpression = 
+                @$"INSERT INTO Persons (FirstName, LastName, Age)
+                  VALUES ('" + firstName + "','" + lastName + "'," + age + ")";
+            return ExecuteNonQeury(tryInjectionSqlExpression);
         }
 
         private int ExecuteNonQeury(string sqlExpression)

@@ -28,7 +28,7 @@ namespace ConsoleApp
             var connectionPoolExamples = new ConnectionPoolExamples();
             connectionPoolExamples.ShowAllExamples();
 
-            var sqlCommandExamples = new SqlCommandExamples();
+            using var sqlCommandExamples = new SqlCommandExamples();
             Task.Run(async () => await sqlCommandExamples.ShowAllExamples());
             Console.Read();
         }
