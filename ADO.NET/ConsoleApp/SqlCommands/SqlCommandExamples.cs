@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data.SqlClient;
+using System.Text;
 
 namespace ConsoleApp.SqlCommands
 {
@@ -31,6 +32,13 @@ namespace ConsoleApp.SqlCommands
                   WHERE FirstName='Omelian'";
             var deletedRows = ExecuteNonQeury(deleteSqlExpression);
             Console.WriteLine($"Deleted rows: {deletedRows}");
+
+            // Select after Insert
+            var selectAllSqlExpression =
+                @"SELECT * FROM Persons";
+            ExecuteNonQeury(insertSqlExpression);
+            var selectAllResult = ExecuteReader(selectAllSqlExpression);
+            Console.WriteLine(selectAllResult);
         }
 
         private int ExecuteNonQeury(string sqlExpression)
@@ -41,6 +49,37 @@ namespace ConsoleApp.SqlCommands
             var command = new SqlCommand(sqlExpression, connection);
             int updatedRows = command.ExecuteNonQuery();
             return updatedRows;
+        }
+
+        private string ExecuteReader(string sqlExpression)
+        {
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+
+            var command = new SqlCommand(sqlExpression, connection);
+            using var reader = command.ExecuteReader();
+            if (!reader.HasRows)
+            {
+                throw new ApplicationException("The table is empty");
+            }
+
+            var result = new StringBuilder();
+
+            for (int i = 0; i < reader.FieldCount; ++i)
+            {
+                result.Append($"{reader.GetName(i)} \t");
+            }
+            while (reader.Read())
+            {
+                // TODO: feels bad, can we do this without casting?
+                object id = reader.GetValue(0);
+                object firstName = reader.GetValue(1);
+                object lastName = reader.GetValue(2);
+                object age = reader.GetValue(3);
+
+                result.Append($"\n {id} \t{firstName} \t{lastName} \t{age}");
+            }
+            return result.ToString();
         }
     }
 }
