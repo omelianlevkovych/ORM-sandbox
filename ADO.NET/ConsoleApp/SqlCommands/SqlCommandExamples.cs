@@ -5,13 +5,34 @@ using System.Threading.Tasks;
 
 namespace ConsoleApp.SqlCommands
 {
-    public class SqlCommandExamples
+    public class SqlCommandExamples : IDisposable
     {
         private readonly string connectionString;
+        private SqlConnection sqlConnection;
 
         public SqlCommandExamples()
         {
             connectionString = @"Server=.;Database=usersdb;Integrated Security=true;";
+            sqlConnection = new SqlConnection(connectionString);
+            sqlConnection.Open();
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (sqlConnection != null)
+                {
+                    sqlConnection.Dispose();
+                    sqlConnection = null;
+                }
+            }
         }
 
         public async Task ShowAllExamples()
@@ -40,24 +61,24 @@ namespace ConsoleApp.SqlCommands
             ExecuteNonQeury(insertSqlExpression);
             var selectAllResult = await ExecuteReader(selectAllSqlExpression);
             Console.WriteLine(selectAllResult);
+
+            // Scalar functions
+            var scalarSqlExpression =
+                @"SELECT COUNT(*) FROM Persons";
+            var scalarResult = await ExecuteScalar(scalarSqlExpression);
+            Console.WriteLine($"Rows count: {scalarResult}");
         }
 
         private int ExecuteNonQeury(string sqlExpression)
         {
-            using var connection = new SqlConnection(connectionString);
-            connection.Open();
-
-            var command = new SqlCommand(sqlExpression, connection);
+            var command = new SqlCommand(sqlExpression, sqlConnection);
             int updatedRows = command.ExecuteNonQuery();
             return updatedRows;
         }
 
         private async Task<string> ExecuteReader(string sqlExpression)
         {
-            using var connection = new SqlConnection(connectionString);
-            connection.Open();
-
-            var command = new SqlCommand(sqlExpression, connection);
+            var command = new SqlCommand(sqlExpression, sqlConnection);
             using var reader = command.ExecuteReader();
             if (!reader.HasRows)
             {
@@ -80,6 +101,12 @@ namespace ConsoleApp.SqlCommands
                 result.Append($"\n {id} \t{firstName} \t{lastName} \t{age}");
             }
             return result.ToString();
+        }
+
+        private Task<object> ExecuteScalar(string sqlExpression)
+        {
+            var command = new SqlCommand(sqlExpression, sqlConnection);
+            return command.ExecuteScalarAsync();
         }
     }
 }
