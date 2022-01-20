@@ -72,11 +72,10 @@ namespace ConsoleApp.SqlCommands
             }
             while (await reader.ReadAsync())
             {
-                // TODO: feels bad, can we do this without casting (strongly typed)?
-                object id = reader["id"];
-                object firstName = reader["firstname"];
-                object lastName = reader["lastname"];
-                object age = reader["age"];
+                int id = reader.GetInt32(0);
+                string firstName = reader.GetString(1);
+                string lastName = reader.GetString(2);
+                int age = reader.GetInt32(3);
 
                 result.Append($"\n {id} \t{firstName} \t{lastName} \t{age}");
             }
