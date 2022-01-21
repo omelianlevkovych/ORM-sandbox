@@ -1,4 +1,5 @@
 ﻿using ConsoleApp.ConnectionPool;
+using ConsoleApp.DataSets;
 using ConsoleApp.SqlCommands;
 using ConsoleApp.Transactions;
 using System;
@@ -36,6 +37,9 @@ namespace ConsoleApp
             sqlTransactionExamples.InsertWithTransaction();
             sqlTransactionExamples.InsertWithFailingTransaction();
 
+
+            using var dataSetExamples = new DataSetExamples();
+            dataSetExamples.ShowAllExamples();
             Console.Read();
         }
 
