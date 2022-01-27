@@ -3,6 +3,7 @@ using NHibernate;
 using NHibernate.Cfg;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace HelloNHibernate
@@ -13,17 +14,19 @@ namespace HelloNHibernate
 
         static void Main(string[] args)
         {
-            var tomas = new Employee();
-            tomas.Name = "Tomas Ligotti";
-            Console.WriteLine(tomas.SayHello());
+            CreateEmployeeAndSaveToDatabase();
+            UpdateAlexAndAssignZeusAsManager();
+            LoadEmployeeFromDatabase();
 
             Console.Read();
         }
 
         static void CreateEmployeeAndSaveToDatabase()
         {
-            var alex = new Employee();
-            alex.Name = "Alexander the Great";
+            var alex = new Employee
+            {
+                Name = "Alexander the Great"
+            };
 
             using var session = OpenSession();
             using var transaction = session.BeginTransaction();
@@ -35,8 +38,7 @@ namespace HelloNHibernate
             }
             catch (Exception exception)
             {
-                // Log the exception message.
-                Console.WriteLine(exception);
+                Console.WriteLine(exception.Message);
                 if (transaction != null)
                 {
                     transaction.Rollback();
@@ -52,7 +54,7 @@ namespace HelloNHibernate
             using var session = OpenSession();
 
             // This is an example of HQL (hibernate query language) which will be translated into SQL by NHibernate (at runtime)
-            var query = session.CreateQuery("From Employee as emp order by emp.name asc");
+            var query = session.CreateQuery("From Employee as emp order by emp.Name asc");
 
             IList<Employee> employees = query.List<Employee>();
             
@@ -60,6 +62,37 @@ namespace HelloNHibernate
             foreach (var employee in employees)
             {
                 Console.WriteLine(employee.SayHello());
+            }
+        }
+
+        static void UpdateAlexAndAssignZeusAsManager()
+        {
+            using var session = OpenSession();
+            using var transaction = session.BeginTransaction();
+
+            try
+            {
+                var query = session.CreateQuery("from Employee where name = 'Alexander the Great'");
+                var alex = query.List<Employee>().FirstOrDefault();
+                alex.Name = "Alexander the Greatest";
+
+                var zeus = new Employee
+                {
+                    Name = "Zeus"
+                };
+                alex.Manager = zeus;
+                transaction.Commit();
+
+                Console.WriteLine("Updated the Alex and assigned Zeus as manager!");
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception.Message);
+                if (transaction != null)
+                {
+                    transaction.Rollback();
+                }
+                throw;
             }
         }
 

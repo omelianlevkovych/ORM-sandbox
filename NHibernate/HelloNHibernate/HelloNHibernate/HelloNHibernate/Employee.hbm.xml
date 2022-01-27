@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+	auto-import="true">
+    <class name="HelloNHibernate.Entities.Employee, HelloNHibernate" lazy="false">
+        <id name="Id" access="property">
+			<generator class="native"/>
+		</id>
+		<property name="Name" access="property" column="name"/>
+		<many-to-one access="property" name="Manager" column="manager"
+					 cascade="all"/>
+    </class>
+</hibernate-mapping>
