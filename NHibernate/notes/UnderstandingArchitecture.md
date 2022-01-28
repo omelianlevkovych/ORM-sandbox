@@ -1,7 +1,7 @@
 # Understanding architecture
 The first thing you have to learn about NHibernate in order to use it are the programming interfaces.  
 
-![basic-architecture](https://github.com/omelianlevkovych/ORM-sandbox/blob/main/notes/images/understand-architecture.jpg)
+![basic-architecture](https://github.com/omelianlevkovych/ORM-sandbox/blob/main/NHibernate/notes/images/understand-architecture.jpg)
 
 
 We can approximately clasify this interfaces:
